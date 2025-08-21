@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "351762541976",
+    "project_id": "cruffirestore",
+    "storage_bucket": "cruffirestore.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351762541976:android:866c2b11b75465f0a70fed",
+        "android_client_info": {
+          "package_name": "com.example.firestorecrud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKBttWw7HD4ZIC5GEZYXlgh9nLKWST1uQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
