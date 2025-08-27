@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class LivroAdapter(
     private var livroList: MutableList<Livro>,
-    private val onDeleteClick: (Livro) -> Unit,
+    private val onDeleteClick: (Livro) -> Unit, //onDeleteClick é um parâmetro que espera uma função.
+                                                // Essa função recebe um objeto Livro como argumento.
+                                                // E o retorno dela é Unit (Equivalente ao void em Java, significa que a função não retorna nada).
     private val onEditClick: (Livro) -> Unit
 ) : RecyclerView.Adapter<LivroAdapter.LivroViewHolder>() {
 
@@ -32,8 +34,8 @@ class LivroAdapter(
         holder.tvAutor.text = "Autor: ${livro.autor}"
         holder.tvAno.text = "Ano: ${livro.ano}"
 
-        holder.btnDelete.setOnClickListener { onDeleteClick(livro) }
-        holder.btnEdit.setOnClickListener { onEditClick(livro) }
+        holder.btnDelete.setOnClickListener { onDeleteClick(livro) } // Quando clicar no botão → chama a função recebida no construtor
+        holder.btnEdit.setOnClickListener { onEditClick(livro) } // Quando clicar no botão → chama a função recebida no construtor
     }
 
     override fun getItemCount() = livroList.size

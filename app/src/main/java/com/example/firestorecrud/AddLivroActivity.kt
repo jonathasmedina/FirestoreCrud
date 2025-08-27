@@ -22,7 +22,7 @@ class AddLivroActivity : AppCompatActivity() {
         livroId = intent.getStringExtra("LIVRO_ID")
         etTitulo.setText(intent.getStringExtra("TITULO"))
         etAutor.setText(intent.getStringExtra("AUTOR"))
-        etAno.setText(intent.getIntExtra("ANO", 0).toString())
+        etAno.setText(intent.getIntExtra("ANO", 0).toString()) // Se não houver ano, o valor padrão é 0
 
         btnSalvar.setOnClickListener {
             val titulo = etTitulo.text.toString()
@@ -35,12 +35,14 @@ class AddLivroActivity : AppCompatActivity() {
                 "ano" to ano
             )
 
+            //aqui vai adicionar
             if (livroId == null) {
                 db.collection("livros")
                     .add(livro)
                     .addOnSuccessListener { finish() }
-            } else {
-                db.collection("livros").document(livroId!!)
+            }
+            else { //aqui vai editar
+                db.collection("livros").document(livroId!!) // !! não é nulo, confia que livroId não é nulo (pois já foi verificado)
                     .set(livro)
                     .addOnSuccessListener { finish() }
             }

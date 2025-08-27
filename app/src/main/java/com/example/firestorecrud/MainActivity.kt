@@ -11,7 +11,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LivroAdapter
-    private val db = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance() // ou private val db = Firebase.firestore equivalente Kotlin (importar ktx)
     private val livros = mutableListOf<Livro>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = LivroAdapter(livros,
-            onDeleteClick = { deleteLivro(it) },
+            onDeleteClick = { deleteLivro(it) }, //variáveis estão declaradas como parâmetros do construtor da classe LivroAdapter.
             onEditClick = { editLivro(it) }
         )
         recyclerView.adapter = adapter
@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         fabAdd.setOnClickListener {
             startActivity(Intent(this, AddLivroActivity::class.java))
         }
-
         getLivros()
     }
 
@@ -39,8 +38,8 @@ class MainActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { result ->
                 livros.clear()
-                for (doc in result) {
-                    val livro = doc.toObject(Livro::class.java)
+                for (doc in result) { //doc é um objeto do tipo DocumentSnapshot, que representa um documento no Firestore.
+                    val livro = doc.toObject(Livro::class.java) //livro é um objeto do tipo Livro (classe criada anteriormente)
                     livro.id = doc.id
                     livros.add(livro)
                 }
@@ -49,7 +48,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteLivro(livro: Livro) {
-        livro.id?.let {
+        livro.id?.let { // let é uma função de escopo que executa o bloco { } somente se o valor não for nulo (quando usada com ?.);
+                        //Dentro do bloco, o valor é acessado através da palavra-chave it.
             db.collection("livros").document(it)
                 .delete()
                 .addOnSuccessListener { getLivros() }
@@ -70,3 +70,14 @@ class MainActivity : AppCompatActivity() {
         getLivros()
     }
 }
+
+/*
+ Firestore :
+	•	Coleções (collections)
+São como “pastas”. Exemplo: "livros", "usuarios", "pedidos".
+	•	Documentos (documents)
+Cada item dentro de uma coleção é um documento JSON-like (chave/valor).
+Cada documento tem um ID único (gerado automaticamente ou definido por você).
+	•	Subcoleções
+Dentro de um documento você ainda pode ter outras coleções.
+ */
