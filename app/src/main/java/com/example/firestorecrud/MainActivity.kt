@@ -2,16 +2,28 @@ package com.example.firestorecrud
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LivroAdapter
+
+    private lateinit var progressBar: ProgressBar
+
+
     private val db = FirebaseFirestore.getInstance() // ou private val db = Firebase.firestore equivalente Kotlin (importar ktx)
+
     private val livros = mutableListOf<Livro>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,21 +31,37 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         recyclerView = findViewById(R.id.recyclerView)
+        progressBar = findViewById(R.id.progressBar)
+
+
         recyclerView.layoutManager = LinearLayoutManager(this)
+
         adapter = LivroAdapter(livros,
             onDeleteClick = { deleteLivro(it) }, //variáveis estão declaradas como parâmetros do construtor da classe LivroAdapter.
             onEditClick = { editLivro(it) }
         )
+
         recyclerView.adapter = adapter
 
         val fabAdd: FloatingActionButton = findViewById(R.id.fabAdd)
         fabAdd.setOnClickListener {
             startActivity(Intent(this, AddLivroActivity::class.java))
         }
-        getLivros()
+
+        progressBar.visibility = View.VISIBLE
+        progressBar.progress = 0
+
+
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.IO) {
+                getLivros()
+            }
+            progressBar.visibility = View.GONE
+        }
     }
 
-    private fun getLivros() {
+    private suspend fun getLivros() {
+
         db.collection("livros")
             .get()
             .addOnSuccessListener { result ->
@@ -45,6 +73,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 adapter.updateList(livros)
             }
+        for (i in 1..1000 step 1) {
+            withContext(Dispatchers.Main) {
+                progressBar.progress = i
+            }
+        }
     }
 
     private fun deleteLivro(livro: Livro) {
@@ -52,7 +85,12 @@ class MainActivity : AppCompatActivity() {
                         //Dentro do bloco, o valor é acessado através da palavra-chave it.
             db.collection("livros").document(it)
                 .delete()
-                .addOnSuccessListener { getLivros() }
+                .addOnSuccessListener { CoroutineScope(Dispatchers.Main).launch {
+                    withContext(Dispatchers.IO) {
+                        getLivros()
+                    }
+                }
+                }
         }
     }
 
@@ -67,7 +105,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        getLivros()
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.IO) {
+                getLivros()
+            }
+        }
     }
 }
 
