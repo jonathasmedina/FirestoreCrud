@@ -49,14 +49,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         progressBar.visibility = View.VISIBLE
-        progressBar.progress = 0
-
 
         CoroutineScope(Dispatchers.Main).launch {
             withContext(Dispatchers.IO) {
                 getLivros()
             }
             progressBar.visibility = View.GONE
+
         }
     }
 
@@ -73,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 adapter.updateList(livros)
             }
-        for (i in 1..1000 step 1) {
+        for (i in 0..100 step 1) {
             withContext(Dispatchers.Main) {
                 progressBar.progress = i
             }
